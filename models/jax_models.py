@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""File reproduced from https://github.com/izmailovpavel/neurips_bdl_starter_kit"""
+
 """CNN haiku models."""
 
 from typing import Tuple
