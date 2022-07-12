@@ -13,10 +13,10 @@ def load_data(dataset_name, train_val_split=False, normalize=False, seed=None):
 
 	Returns:
 		tuple: (train_set, val_set, test_set, probas)
-		train_set (tf.data.Dataset): the training set
-		val_set (tf.data.Dataset): the validation set (return None if train_val_split is set to False)
-		test_set (tf.data.Dataset): the test set
-		probas (np.array): The HMC prediction probabilities (return None if does not exist)
+			train_set (tf.data.Dataset): the training set
+			val_set (tf.data.Dataset): the validation set (return None if train_val_split is set to False)
+			test_set (tf.data.Dataset): the test set
+			probas (np.array): The HMC prediction probabilities (return None if does not exist)
 	"""
 
 	datadir = os.path.join("data", dataset_name)
