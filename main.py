@@ -10,7 +10,13 @@ import wandb
 import glob
 
 def main(args):
+    """ Execute main program
 
+    Args:
+        args (dict): Dictionary contraining the main arguments.
+    """
+
+    # Load the config file
     with open(args["config_file"], "r") as fp:
         config = yaml.load(fp, Loader=yaml.FullLoader)
 
@@ -19,6 +25,7 @@ def main(args):
 
     args = config
 
+    # Update the save directry according to the job index
     if "index" in args.keys():
         index = args["index"]
         if index is not None:
@@ -26,14 +33,17 @@ def main(args):
     else:
         index = None
 
+    # Load arguments
     dataset_name = args["dataset_name"]
     competition_mode = args["competition_mode"]
 
+    # Init wandb if not competition mode
     if not competition_mode:
         wandb.init(project="bdl_competition_{}".format(dataset_name), entity="adelau", config=args)
         args = wandb.config
     print("args = {}".format(args))
     
+    # Load arguments
     method = args["method"]
     train_batch_size = args["train_batch_size"]
     test_batch_size = args["test_batch_size"]
@@ -47,6 +57,7 @@ def main(args):
     train_val_split = args["train_val_split"]
     normalize = args["normalize"]
     
+    # Set arguments to default values if not provided
     if "seed" in args.keys():
         seed = args["seed"]
         print("Using seed {}".format(seed))
@@ -82,6 +93,7 @@ def main(args):
     else:
         early_stopping_epochs = 1
 
+    # Extract optimizer arguments
     if optimizer == "sgd":
         optimizer_args = {"optimizer_name": "sgd",
                           "momentum": args["momentum"],
@@ -92,34 +104,13 @@ def main(args):
                           "b1": args["b1"],
                           "b2": args["b2"]}
     
-    clip_gradient = args["clip_gradient"]
-    increase_prior_variance = args["increase_prior_variance"]
 
-    if clip_gradient:
-        clipping_norm = args["clipping_norm"]
-    else:
-        # Not used
-        clipping_norm = None
-
-    imbalance = args["imbalance"]
-    if imbalance:
-        imbalance_factor = args["imbalance_factor"]
-        imbalance_method = args["imbalance_method"]
-        if imbalance_method == "focal":
-            gamma = args["gamma"]
-        else:
-            #gamma = None
-            gamma = args["gamma"]
-    else:
-        imbalance_method = None
-        imbalance_factor = None
-        gamma = None
-
+    # Create the save directory if not exists
     try: 
         os.mkdir("results")
     except FileExistsError:
         pass
-
+    
     save_dir = os.path.join("results", save_dir)
 
     try: 
@@ -127,6 +118,7 @@ def main(args):
     except FileExistsError:
         pass
     
+    # Load the datasets
     train_set, val_set, test_set, probas = load_data(dataset_name, train_val_split=train_val_split, normalize=normalize, seed=seed)
 
     train_set_size = len(train_set)
@@ -142,42 +134,42 @@ def main(args):
         
     test_loader = test_set.batch(test_batch_size)
 
+    # Load the base model (the neural network architecture)
     base_model, prior_variance, task = load_model(dataset_name)
 
+    # Create the model
+
+    # A single seural network
     if method == "simple_model":
         model = SimpleModel(base_model, save_dir, task)
 
+    # An ensemble of anchored neurals networks trained independently (AE)
     if method == "ensemble":
         ensemble_size = args["ensemble_size"]
         model = EnsembleModel(base_model, save_dir, task, ensemble_size)
 
+    # An ensemble of anchored neurals networks trained sequentialy with anchored drawn from an MCMC procedure (SAE)
     if method == "sequential_ensemble":
         ensemble_size = args["ensemble_size"]
         num_chains = args["num_chains"]
         model = SequentialEnsembleModel(base_model, save_dir, task, ensemble_size, num_chains)
 
+    # An ensemble of anchored neurals networks with anchored drawn i.i.d. trained sequentialy to minimize the distance between consecutive anchors
     if method == "graph_ensemble":
         ensemble_size = args["ensemble_size"]
         num_init_points = args["num_init_points"]
         distance = args["distance"]
         model = GraphEnsembleModel(base_model, save_dir, task, ensemble_size, num_init_points, distance)
-    
-    if method == "graph_gaussian_ensemble":
-        ensemble_size = args["ensemble_size"]
-        num_init_points = args["num_init_points"]
-        posterior_approx = args["posterior_approx"]
-        model = GraphGaussianEnsembleModel(base_model, save_dir, task, ensemble_size, num_init_points, posterior_approx)
 
+    # Train the model
     if method == "simple_model":
         model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance*increase_prior_variance, keep_best_weights, optimizer_args, 
-                    clip_gradient, clipping_norm, competition_mode, imbalance=imbalance, imbalance_factor=imbalance_factor, imbalance_method=imbalance_method, 
-                    gamma=gamma, seed=seed, early_stopping=early_stopping, early_stopping_epochs=early_stopping_epochs, max_budget=max_budget)
+                    competition_mode, seed=seed, early_stopping=early_stopping, early_stopping_epochs=early_stopping_epochs, max_budget=max_budget)
     if method == "ensemble":
         model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance*increase_prior_variance, keep_best_weights, optimizer_args, 
-                    clip_gradient, clipping_norm, competition_mode, imbalance=imbalance, imbalance_factor=imbalance_factor, imbalance_method=imbalance_method, 
-                    gamma=gamma, seed=seed, early_stopping=early_stopping, early_stopping_epochs=early_stopping_epochs, max_budget=max_budget, anchored=anchored)
+                    competition_mode, seed=seed, early_stopping=early_stopping, early_stopping_epochs=early_stopping_epochs, max_budget=max_budget, anchored=anchored)
 
-    if method == "sequential_ensemble" or method == "graph_ensemble" or method == "graph_gaussian_ensemble":
+    if method == "sequential_ensemble" or method == "graph_ensemble":
         sequential_lr = args["sequential_lr"]
         sequential_min_lr = args["sequential_min_lr"]
         sequential_nb_epochs = args["sequential_nb_epochs"]
@@ -215,17 +207,18 @@ def main(args):
 
 
         model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance*increase_prior_variance, keep_best_weights, optimizer_args, 
-                    clip_gradient, clipping_norm, competition_mode, sampler_params, sequential_lr, sequential_min_lr, sequential_optimizer_args, 
-                    sequential_nb_epochs, imbalance=imbalance, imbalance_factor=imbalance_factor, gamma=gamma, seed=seed, save_anchors=save_anchors,
+                    competition_mode, sampler_params, sequential_lr, sequential_min_lr, sequential_optimizer_args, 
+                    sequential_nb_epochs, seed=seed, save_anchors=save_anchors,
                     early_stopping=early_stopping, early_stopping_epochs=early_stopping_epochs, max_budget=max_budget)
 
-    if method == "graph_ensemble" or method == "graph_gaussian_ensemble":
+    if method == "graph_ensemble":
                                          
         model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance*increase_prior_variance, keep_best_weights, optimizer_args, 
-                    clip_gradient, clipping_norm, competition_mode, sequential_lr, sequential_min_lr, sequential_optimizer_args, sequential_nb_epochs,
-                    imbalance=imbalance, imbalance_factor=imbalance_factor, gamma=gamma, seed=seed, save_anchors=save_anchors, early_stopping=early_stopping, 
+                    competition_mode, sequential_lr, sequential_min_lr, sequential_optimizer_args, sequential_nb_epochs,
+                    seed=seed, save_anchors=save_anchors, early_stopping=early_stopping, 
                     early_stopping_epochs=early_stopping_epochs, max_budget=max_budget)
 
+    # Evaluate the model
     if task == "classification":
         if val_loader is not None and not competition_mode:
              _, _, _, accuracy, log_likelihood = evaluate_model(model, val_loader, None, test_batch_size, len(val_set), task)
