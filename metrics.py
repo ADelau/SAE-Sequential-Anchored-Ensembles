@@ -4,6 +4,8 @@ Make sure to indicate the name of the function that you chose as metric function
 in the file metric.txt. E.g. example_metric, because this file may contain more 
 than one function, hence you must specify the name of the function that is your metric.'''
 
+"""File reproduced from https://github.com/izmailovpavel/neurips_bdl_starter_kit"""
+
 import numpy as np
 import scipy
 
