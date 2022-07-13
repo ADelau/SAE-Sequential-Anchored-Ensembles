@@ -4,16 +4,44 @@ from jax import numpy as jnp
 import jax
 
 def evaluate_model(model, test_loader, true_probas, batch_size, test_size, task):
+    """Evaluate the performance of a given model
+
+    Args:
+        model (SimpleModel, EnsembleModel, ...): A model such as found in models.py
+        test_loader (tf.data.Dataset): The dataloader for the test set
+        true_probas (np.array): The HMC probabilities (pass None if not available)
+        batch_size (int): The batch size
+        test_size (int): The size of the test set
+        task (str): "classification" or "regression"
+
+    Returns:
+        if task is "classification"
+            tuple: (pred_probas, agreement, total_variation, accuracy, likelihood)
+                pred_probas (np.array): the predicted probabilities
+                agreement (float): the agreement (0. if true_probas is None)
+                total_variation (float): the total variation (0. if true_probas is None)
+                accuracy (float): the accuracy
+                likelihood (float): the likelihood of the test set given the model
+
+        if test is "regreesion"
+            tuple: (samples, w2, mse)
+                samples (np.array): samples from the predicted distributions
+                w2 (float): the W2 distance (0. if true_probas is None)
+                mse (float): the mean squared error
+    """
 
     if task == "classification":
+        # Compute predicted probabilities
         pred_probas = model.predict(test_loader, batch_size)
 
+        # Compute the class with maximum probability
         preds = jnp.argmax(pred_probas, axis=1)
         num_classes = pred_probas.shape[-1]
 
         
         print("mean pred = {}".format(preds.mean()))
 
+        # Evaluate accuracy and likelihood
         accuracy = 0.
         likelihood = 0.
         for i, batch in enumerate(test_loader):
@@ -25,6 +53,7 @@ def evaluate_model(model, test_loader, true_probas, batch_size, test_size, task)
 
         accuracy = accuracy/test_size
 
+        # Evaluate agreemeent and total variation
         pred_probas = np.array(pred_probas)
 
         if true_probas is None:
@@ -37,8 +66,10 @@ def evaluate_model(model, test_loader, true_probas, batch_size, test_size, task)
         return pred_probas, agreement, total_variation, accuracy, likelihood
 
     if task == "regression":
+        # Draw samples from the predicted distributions
         samples = model.predict(test_loader, batch_size)
 
+        # Evaluate the mean squared error
         mse = 0.
         count = 0
         for i, batch in enumerate(test_loader):
@@ -50,6 +81,7 @@ def evaluate_model(model, test_loader, true_probas, batch_size, test_size, task)
         mse = mse/count
         samples = np.array(samples)
 
+        # evaluate the W2 distance
         if true_probas is None:
             w2 = 0.
         else:
