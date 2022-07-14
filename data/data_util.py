@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 
 def load_data(dataset_name, train_val_split=False, normalize=False, seed=None):
-	"""
+	""" Load the datasets
 
 	Args:
 		dataset_name (str): The name of the dataset to load

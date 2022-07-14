@@ -1,5 +1,5 @@
 from data import load_data
-from models import load_model, SimpleModel, EnsembleModel, SequentialEnsembleModel, GraphEnsembleModel, GraphGaussianEnsembleModel
+from models import load_model, SimpleModel, EnsembleModel, SequentialEnsembleModel, GraphEnsembleModel
 from utils import evaluate_model
 import argparse
 import yaml
