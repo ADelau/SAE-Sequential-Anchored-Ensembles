@@ -125,7 +125,7 @@ def train_model(train_loader, val_loader, model_apply, params, nb_epochs, train_
             Returns:
                 float: The log posterior
             """
-            log_lik = log_likelihood_fct_classif(params, batch, is_training=True, gamma=gamma)
+            log_lik = log_likelihood_fct_classif(params, batch, is_training=True)
             log_prior = log_prior_fct(params)
             return log_lik + log_prior
 
