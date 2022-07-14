@@ -1,5 +1,5 @@
 # SAE: Sequential Anchored Ensembles
-This repository contains the code associated with the manuscript `SAE: Sequential Anchored Ensembles` [[link](https://arxiv.org/abs/2201.00649)]. 
+This repository contains the code associated with the manuscript `SAE: Sequential Anchored Ensembles` [[link](https://arxiv.org/abs/2201.00649)]. This idea has been developed in the context of the [Approximate Inference in Bayesian Deep Learning NeurIPS2021 competition](https://izmailovpavel.github.io/neurips_bdl_competition/#:~:text=While%20approximate%20inference%20procedures%20in,of%20the%20Bayesian%20predictive%20distribution.) and achieved the $2^{nd}$ and $3^{rd}$ place in the light and extended tracks, respectively.
 
 ## Setting up the environment
 The code has been tested with the version 3.7.11 of python. The requirements can be found in the file `requirements.txt`. To install all the dependencies, run the following command.
