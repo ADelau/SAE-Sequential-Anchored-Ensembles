@@ -420,7 +420,7 @@ class SequentialEnsembleModel():
             # Train the first model
             print("training model {}/{}".format(1, self.ensemble_size))
             params, epochs_made = train_model(train_loader, val_loader, self.base_model_apply, params, nb_epochs, train_set_size, lr, min_lr, self.save_dir, anchor, prior_variance, 
-                                              keep_best_weights, optimizer_args, self.task, competition_mode, current_index, max_gamma=gamma, early_stopping=early_stopping, 
+                                              keep_best_weights, optimizer_args, self.task, competition_mode, current_index, early_stopping=early_stopping, 
                                               early_stopping_epochs=early_stopping_epochs, max_budget=current_max_budget)
             
             total_epochs += epochs_made
