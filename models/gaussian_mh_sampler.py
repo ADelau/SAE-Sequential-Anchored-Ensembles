@@ -3,13 +3,32 @@ from scipy.stats import norm
 import math
 
 class GaussianMHSampler():
+	"""
+	Metropolis-Hastings sampler with Gaussian transitions. 
+    Run a different Markov chain for each dimension.
+	"""
 	def __init__(self, means, stds, step_std):
+		"""Constructor
+
+		Args:
+			means (np.array): Means for each of the dimensions
+			stds (np.array): Standard deviations for each of the dimensions
+            step_std (float): The standard deviation of the Gaussian transitions
+		"""
+
 		self.means = means
 		self.stds = stds
 		self.step_std = step_std
 		self.current_sample = np.random.normal(loc=means, scale=stds)
 
 	def sample(self):
+		"""Grow the Markov chains from 1 sample
+
+        Returns:
+            np.array: The next samples
+        """
+		
+		# Samples perturbations from a Gaussian
 		noise = np.random.normal(loc=0., scale=self.step_std, size=self.means.shape)
 		next_sample = self.current_sample + noise
 		
@@ -22,6 +41,10 @@ class GaussianMHSampler():
 		return self.current_sample
 
 if __name__ == "__main__":
+	"""
+	Test the sampler
+	"""
+
 	from matplotlib import pyplot as plt
 	NB_SAMPLES = 1000
 	PRIOR_MEAN = 0.

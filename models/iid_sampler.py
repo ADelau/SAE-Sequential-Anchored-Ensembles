@@ -3,14 +3,34 @@ from scipy.stats import norm
 import math
 
 class IIDSampler():
+	"""
+	Sampler that draw samples independently
+	"""
 	def __init__(self, means, stds):
+		"""Constructor
+
+		Args:
+			means (np.array): Means for each of the dimensions
+			stds (np.array): Standard deviations for each of the dimensions
+		"""
 		self.means = means
 		self.stds = stds
 
 	def sample(self):
+		"""Draw samples
+
+		Returns:
+			np.array: The samples
+		"""
+		
+		# Draw samples from a normal distribution
 		return np.random.normal(loc=self.means, scale=self.stds)
 
 if __name__ == "__main__":
+	"""
+	Test the sampler
+	"""
+
 	from matplotlib import pyplot as plt
 	NB_SAMPLES = 1000
 	PRIOR_MEAN = 0.

@@ -7,6 +7,16 @@ import jax
 
 
 def gaussian_energy(x, means=0., sigmas=1.):
+    """Compute the energy function
+
+    Args:
+        x (np.array or float): The position(s)
+        means (np.array or float, optional): The mean(s). Defaults to 0..
+        sigmas (np.array or float, optional): The standard deviation(s). Defaults to 1.
+
+    Returns:
+        np.array or float: The associated energ(y/ies)
+    """
     
     n_params = len(x)
     exp_term = -(x-means)**2 / (2 * sigmas**2)
@@ -14,19 +24,62 @@ def gaussian_energy(x, means=0., sigmas=1.):
     return -(exp_term + norm_constant)
 
 def gaussian_energy_grad(x, means=0., sigmas=1):
+    """Compute the gradient of the energy function
+
+    Args:
+        x (np.array or float): The position(s)
+        means (np.array or float, optional): The mean(s). Defaults to 0..
+        sigmas (np.array or float, optional): The standard deviation(s). Defaults to 1.
+
+    Returns:
+        np.array or float: The associated energy gradient(s)
+    """
 
     exp_term = -2*(x-means) / (2 * sigmas**2)
     return -exp_term
 
 def kinetic_energy(velocity):
+    """Compute the kinetic energy
+
+    Args:
+        velocity (np.array): The velocities
+
+    Returns:
+        np.array: The associated kinetic energies
+    """
 
     return 0.5 * velocity**2
 
 def hamiltonian(position, velocity, energy):
+    """Compute the Hamiltonians
+
+    Args:
+        position (np.array): The positions
+        velocity (np.array): The velocities
+        energy (function): The energy function
+
+    Returns:
+        np.array: The associated Hamiltonians
+    """
 
     return energy(position) + kinetic_energy(velocity)
 
 def leapfrog_step(x0, v0, energy, grad_energy, step_size, num_steps):
+    """Perform several leapfrog steps
+
+    Args:
+        x0 (np.array): The initial positions
+        v0 (np.array): The initial velocities
+        energy (function): The energy function
+        grad_energy (function):The gradient of the energy function
+        step_size (float): The size of a leapfrog step
+        num_steps (int): Number of steps performed
+
+    Returns:
+        tuple: (x, v, loss)
+            x (np.array): The new positions
+            v (np.array): The new velocities
+    """
     
     gradient = grad_energy(x0)
     v = v0 - 0.5 * step_size * gradient
@@ -42,8 +95,22 @@ def leapfrog_step(x0, v0, energy, grad_energy, step_size, num_steps):
     return x, v
 
 def hmc(initial_x, step_size, num_steps, energy, grad_energy):
+    """Grow the Markov chains from 1 sample
+
+    Args:
+        initial_x (np.array): Current samples in the Markov chains
+        step_size (float): The size of a leapfrog step
+        num_steps (int): Number of steps performed between each Metropolis-Hastings correction
+        energy (function): The energy function
+        grad_energy (function):The gradient of the energy function
+
+    Returns:
+        np.array: Next samples in the Markov chains
+    """
 
     v0 = np.random.normal(initial_x.shape)
+
+    # Perform leap frog steps
     x, v = leapfrog_step(initial_x,
                       v0, 
                       step_size=step_size, 
@@ -51,19 +118,34 @@ def hmc(initial_x, step_size, num_steps, energy, grad_energy):
                       energy=energy,
                       grad_energy=grad_energy)
 
+    # Metropolis-Hastings correction
     orig = hamiltonian(initial_x, v0, energy)
 
     current = hamiltonian(x, v, energy)
 
     alpha = np.exp(orig - current)
     alpha = np.minimum(alpha, 1.)
-
+    
     uniform_samples = np.random.uniform(low=0., high=1., size=alpha.shape)
     return np.where(uniform_samples <= alpha, x, initial_x)
 
 
 class HamiltonianSampler():
+    """
+	Hamiltonian Monte Carlo (HMC) sampler. 
+    Draw samples using MCMC and Hamiltonian dynamics. 
+    Run a different Markov chain for each dimension.
+	"""
     def __init__(self, means, stds, step_size, num_steps):
+        """Constructor
+
+		Args:
+			means (np.array): Means for each of the dimensions
+			stds (np.array): Standard deviations for each of the dimensions
+            step_size (float): The size of a leapfrog step
+            num_steps (int): Number of steps performed between each Metropolis-Hastings correction
+		"""
+
         self.means = means
         self.stds = stds
         self.step_size = step_size
@@ -74,11 +156,21 @@ class HamiltonianSampler():
         self.grad_energy = lambda x: gaussian_energy_grad(x, means=means, sigmas=stds)
 
     def sample(self):
+        """Grow the Markov chains from 1 sample
+
+        Returns:
+            np.array: The next samples
+        """
+        
         self.current_sample = hmc(self.current_sample, self.step_size, self.num_steps, self.energy, self.grad_energy)
 
         return np.array(self.current_sample)
 
 if __name__ == "__main__":
+    """
+	Test the sampler
+	"""
+
     from matplotlib import pyplot as plt
     NB_SAMPLES = 1000
     PRIOR_MEAN = 0.
