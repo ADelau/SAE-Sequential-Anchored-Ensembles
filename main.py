@@ -163,10 +163,10 @@ def main(args):
 
     # Train the model
     if method == "simple_model":
-        model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance*increase_prior_variance, keep_best_weights, optimizer_args, 
+        model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance, keep_best_weights, optimizer_args, 
                     competition_mode, seed=seed, early_stopping=early_stopping, early_stopping_epochs=early_stopping_epochs, max_budget=max_budget)
     if method == "ensemble":
-        model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance*increase_prior_variance, keep_best_weights, optimizer_args, 
+        model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance, keep_best_weights, optimizer_args, 
                     competition_mode, seed=seed, early_stopping=early_stopping, early_stopping_epochs=early_stopping_epochs, max_budget=max_budget, anchored=anchored)
 
     if method == "sequential_ensemble" or method == "graph_ensemble":
@@ -206,14 +206,14 @@ def main(args):
                               "num_steps": args["num_steps"]}
 
 
-        model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance*increase_prior_variance, keep_best_weights, optimizer_args, 
+        model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance, keep_best_weights, optimizer_args, 
                     competition_mode, sampler_params, sequential_lr, sequential_min_lr, sequential_optimizer_args, 
                     sequential_nb_epochs, seed=seed, save_anchors=save_anchors,
                     early_stopping=early_stopping, early_stopping_epochs=early_stopping_epochs, max_budget=max_budget)
 
     if method == "graph_ensemble":
                                          
-        model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance*increase_prior_variance, keep_best_weights, optimizer_args, 
+        model.train(train_loader, val_loader, nb_epochs, train_set_size, lr, min_lr, prior_variance, keep_best_weights, optimizer_args, 
                     competition_mode, sequential_lr, sequential_min_lr, sequential_optimizer_args, sequential_nb_epochs,
                     seed=seed, save_anchors=save_anchors, early_stopping=early_stopping, 
                     early_stopping_epochs=early_stopping_epochs, max_budget=max_budget)
