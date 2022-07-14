@@ -32,7 +32,7 @@ def evaluate_model(model, test_loader, true_probas, batch_size, test_size, task)
 
     if task == "classification":
         # Compute predicted probabilities
-        pred_probas = model.predict(test_loader, batch_size)
+        pred_probas = model.predict(test_loader)
 
         # Compute the class with maximum probability
         preds = jnp.argmax(pred_probas, axis=1)
