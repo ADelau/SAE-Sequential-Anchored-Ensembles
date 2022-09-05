@@ -11,7 +11,7 @@ $-\log p(\theta|D) = -\log p(D|\theta) - \log p(\theta) + \log p(D)$,
 
 which is equivalent to minimize
 
-$- \log p(D|\theta) -\log p(\theta) = -\sum_{i=1, .., N} \log p(y_i|\theta, x_i) -\log p(\theta)$.
+$- \log p(D|\theta) -\log p(\theta) \approx -\sum_{i=1, .., N} \log p(y_i|\theta, x_i) -\log p(\theta)$.
 
 This is implemented in the class `SimpleModel`.
 
@@ -30,7 +30,17 @@ where $p_{\text{anc}}(\theta) = \mathcal{N}(\theta_{\text{anc}}, \Sigma_{\text{p
 This is implemented in the class `EnsembleModel`. Set the argument `anchored` to True to use anchored ensembles and to False to use deep ensembles.
 
 ## Sequential anchored ensembles
-[Sequential anchored ensembles](https://arxiv.org/abs/2201.00649) aim to efficiently construct an anchored ensembles by training the members sequentially. Every training procedure take as starting point the optimum reached by the previous member with another anchor. In order to have consecutive anchors close to each other, the anchors $\theta_\text{anc}$ are sampled from an MCMC procedure that should eventually span the whole prior. Several MCMC samplers are provided. However, for the best performence, we recommand using the guided walk sampler. 
+[Sequential anchored ensembles](https://arxiv.org/abs/2201.00649) aim to efficiently construct an anchored ensembles by training the members sequentially. Every training procedure take as starting point the optimum reached by the previous member with another anchor. In order to have consecutive anchors close to each other, the anchors $\theta_\text{anc}$ are sampled from an MCMC procedure that should eventually span the whole prior. Several MCMC samplers are provided. However, for the best performance, we recommand using the guided walk sampler. 
+
+The different samplers available are
+* **IID** The samples are drawn independently from the same distribution.
+
+* **Gaussian Metropolis-Hastings** The samples are drawn using a Metropolis-Hastings procedure with a Gaussian proposal
+
+* **Guided walk Metropolis Hastings** The samples are drawn using a Guided-Walk Metropolis-Hastings procedure with a Gaussian proposal. The proposals always go in the same direction until a rejection occurs, switching the direction.
+
+* **Hamiltonian Monte Carlo**
+Proposals are drawn from Hamiltonian dynamics.
 
 ## Graphical anchored ensembles
 Graphical anchored ensembles are an attempt to improve on sequential anchored ensembles that have not been included in the paper. It follows similar ideas of training the members sequentially for more efficient training. However, in this case the anchors are not sampled from an MCMC procedure but i.i.d from the prior distribution. The members are then trained in an order that minimizes the distance between consecutive anchors for faster training.
