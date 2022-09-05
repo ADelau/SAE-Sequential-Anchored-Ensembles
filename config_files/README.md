@@ -56,7 +56,7 @@ Some of these arguments should be provided depending on the method used.
   | sequential_optimizer | The optimizer to use for sequential trainings: sgd or adam |
   | sequential_lr | The initial learning rate to use for sequential training |
   | sequential_min_lr | The minimal learning rate atteined after scheduling for sequential trainings (a cosine scheduling is applied). To turn of scheduling, simply set min_lr to the same value as lr. |
-  | distance | The distance function used to comparethe anchors: `l1`or `l2` |
+  | distance | The distance function used to comparethe anchors: `l1` or `l2` |
   | num_init_point | The number of models to train fully before starting the sequential procedure. |
 
 ## Optimizer arguments
@@ -82,13 +82,13 @@ When using the sequential ensembles method, depending on the sampler used, some 
 * gaussian_mh sampler
   | Name | Description |
   | --- | --- |
-  | step_std |  |
+  | step_std | The standard deviation of the Gaussian transitions |
 * guided_walk sampler
   | Name | Description |
   | --- | --- |
-  | step_std |  |
+  | step_std | The standard deviation of the Gaussian transitions |
 * hmc sampler
   | Name | Description |
   | --- | --- |
-  | step_size |  |
-  | num_steps |  |
+  | step_size | The size of a leapfrog step |
+  | num_steps | The number of steps performed between each Metropolis-Hastings corrections |
