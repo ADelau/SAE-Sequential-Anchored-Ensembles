@@ -5,7 +5,7 @@ These arguments should always be provided.
 
 | Name | Description |
 | --- | --- |
-| dataset_name |  |
+| dataset_name | The name of the dataset: cifar10, imdb, cifar_anon, dermamnist_anon, energy_anon or a dataset ou have added |
 | method |  |
 | train_batch_size |  |
 | test_batch_size |  |
@@ -60,7 +60,7 @@ Some of these arguments should be provided depending on the method used.
   | num_init_point |  |
 
 ## Optimizer arguments
-Depending on the optimizer used, some additionnel arguments should be provided
+Depending on the optimizer used, some additionnel arguments should be provided.
 
 * SGD
   | Name | Description |
@@ -76,3 +76,19 @@ Depending on the optimizer used, some additionnel arguments should be provided
 In cases a sequential optimizer is provided, those arguments should also be provided for the sequential optimizer (sequential_momentum, sequential_nesterov, sequential_b1, sequential_b2).
 
 ## Sampler arguments
+When using the sequential ensembles method, depending on the sampler used, some additionnel arguments should be provided.
+
+* iid sampler: No additional arguments
+* gaussian_mh sampler
+  | Name | Description |
+  | --- | --- |
+  | step_std |  |
+* guided_walk sampler
+  | Name | Description |
+  | --- | --- |
+  | step_std |  |
+* hmc sampler
+  | Name | Description |
+  | --- | --- |
+  | step_size |  |
+  | num_steps |  |
