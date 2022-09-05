@@ -1,3 +1,5 @@
+## Provided datasets
+
 The five following datasets are available for use:
 * Cifar10 (cifar10, development phase)
 * IMDB (imdb, development phase)
@@ -18,3 +20,7 @@ Features, labels and HMC predictions should be placed in the corresponding folde
 Note 1: the neural network architectures are automatically selected to match the one used to generate the HMC predictions.
 
 Note 2: The code will run fine without the `probs.csv` file, some metrics will simply not be computed.
+
+## Adding a new dataset
+
+To use a custom dataset you should modify the `load_data` function from [data_util.py](data_util.py) to load the dataset and the `load_model` function from [models_util.py](../models/models_util.py) to load the corresponding model.
