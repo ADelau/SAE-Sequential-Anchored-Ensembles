@@ -43,4 +43,4 @@ The different samplers available are
 Proposals are drawn from Hamiltonian dynamics.
 
 ## Graphical anchored ensemble
-Graphical anchored ensembles are an attempt to improve on sequential anchored ensembles that have not been included in the paper. It follows similar ideas of training the members sequentially for more efficient training. However, in this case, the anchors are not sampled from an MCMC procedure but i.i.d from the prior distribution. The members are then trained in an order that minimizes the distance between consecutive anchors for faster training.
+Graphical anchored ensembles are an attempt to improve on sequential anchored ensembles that have not been included in the paper. It follows similar ideas of training the members sequentially for more efficient training. However, in this case, the anchors are not sampled from an MCMC procedure but i.i.d. from the prior distribution. The members are then trained in an order that minimizes the distance between consecutive anchors for faster training.
