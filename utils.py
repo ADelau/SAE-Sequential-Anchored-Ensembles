@@ -67,7 +67,7 @@ def evaluate_model(model, test_loader, true_probas, batch_size, test_size, task)
 
     if task == "regression":
         # Draw samples from the predicted distributions
-        samples = model.predict(test_loader, batch_size)
+        samples = model.predict(test_loader)
 
         # Evaluate the mean squared error
         mse = 0.
