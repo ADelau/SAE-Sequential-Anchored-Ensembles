@@ -50,7 +50,6 @@ def main(args):
     nb_epochs = args["nb_epochs"]
     lr = args["lr"]
     min_lr = args["min_lr"]
-    num_workers = args["num_workers"]
     save_dir = args["save_dir"]
     keep_best_weights = args["keep_best_weights"]
     optimizer = args["optimizer"]
