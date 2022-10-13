@@ -36,3 +36,6 @@ A description of all those models can be found [here](models/).
   year={2021}
 }
 ```
+
+## Contact
+delaunoy.arnaud@gmail.com
